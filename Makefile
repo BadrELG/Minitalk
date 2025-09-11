@@ -9,32 +9,32 @@ CLIENT_OBJ	= $(CLIENT_SRC:.c=.o)
 
 CC			= gcc
 CFLAGS		= -Wall -Wextra -Werror
-INCLUDES	= -I LibFt
+INCLUDES	= -I src -I src/Printf
 
-LIBFT_DIR	= LibFt
-LIBFT		= $(LIBFT_DIR)/libft.a
+SRC_DIR		= src
+PRINTF_DIR	= $(SRC_DIR)/Printf
 
-all: $(LIBFT) $(SERVER) $(CLIENT)
+SRC_FILES	= $(SRC_DIR)/ft_atoi.c
+PRINTF_FILES = $(PRINTF_DIR)/ft_printf.c $(PRINTF_DIR)/ft_convert.c $(PRINTF_DIR)/ft_2convert.c
 
-$(SERVER): $(SERVER_OBJ) $(LIBFT)
-	$(CC) $(CFLAGS) $(SERVER_OBJ) $(LIBFT) -o $(SERVER)
+OBJ_FILES	= $(SRC_FILES:.c=.o) $(PRINTF_FILES:.c=.o)
 
-$(CLIENT): $(CLIENT_OBJ) $(LIBFT)
-	$(CC) $(CFLAGS) $(CLIENT_OBJ) $(LIBFT) -o $(CLIENT)
+all: $(SERVER) $(CLIENT)
 
-%.o: %.c minitalk.h
+$(SERVER): $(SERVER_OBJ) $(OBJ_FILES)
+	$(CC) $(CFLAGS) $(SERVER_OBJ) $(OBJ_FILES) -o $(SERVER)
+
+$(CLIENT): $(CLIENT_OBJ) $(OBJ_FILES)
+	$(CC) $(CFLAGS) $(CLIENT_OBJ) $(OBJ_FILES) -o $(CLIENT)
+
+%.o: %.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
-$(LIBFT):
-	make -C $(LIBFT_DIR)
-
 clean:
-	rm -f $(SERVER_OBJ) $(CLIENT_OBJ)
-	make -C $(LIBFT_DIR) clean
+	rm -f $(SERVER_OBJ) $(CLIENT_OBJ) $(OBJ_FILES)
 
 fclean: clean
 	rm -f $(SERVER) $(CLIENT)
-	make -C $(LIBFT_DIR) fclean
 
 re: fclean all
 
