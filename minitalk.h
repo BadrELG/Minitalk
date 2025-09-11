@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   server.c                                           :+:      :+:    :+:   */
+/*   minitalk.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: badr <badr@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,41 +10,13 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minitalk.h"
+#ifndef MINITALK_H
+# define MINITALK_H
 
-static char	g_char = 0;
-static int	g_bit_count = 0;
+# include <signal.h>
+# include <unistd.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include "LibFt/libft.h"
 
-void	signal_handler(int signal)
-{
-	g_char *= 2;
-	if (signal == SIGUSR2)
-		g_char = g_char | 1;
-	g_bit_count++;
-	if (g_bit_count == 8)
-	{
-		ft_printf("%c", g_char);
-		g_char = 0;
-		g_bit_count = 0;
-	}
-}
-
-void	setup_signals(void)
-{
-	struct sigaction	sa;
-
-	sa.sa_handler = signal_handler;
-	sigemptyset(&sa.sa_mask);
-	sa.sa_flags = SA_RESTART;
-	sigaction(SIGUSR1, &sa, NULL);
-	sigaction(SIGUSR2, &sa, NULL);
-}
-
-int	main(void)
-{
-	ft_printf("Pid Server : %d\n", getpid());
-	setup_signals();
-	while (1)
-		pause();
-	return (0);
-}
+#endif

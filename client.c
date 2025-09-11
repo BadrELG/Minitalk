@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   server.c                                           :+:      :+:    :+:   */
+/*   client.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: badr <badr@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -12,39 +12,43 @@
 
 #include "minitalk.h"
 
-static char	g_char = 0;
-static int	g_bit_count = 0;
-
-void	signal_handler(int signal)
+void	send_char(char c, int pid)
 {
-	g_char *= 2;
-	if (signal == SIGUSR2)
-		g_char = g_char | 1;
-	g_bit_count++;
-	if (g_bit_count == 8)
+	int	i;
+	int	bit;
+
+	i = 7;
+	while (i >= 0)
 	{
-		ft_printf("%c", g_char);
-		g_char = 0;
-		g_bit_count = 0;
+		bit = (c >> i) & 1;
+		if (bit == 1)
+			kill(pid, SIGUSR2);
+		else
+			kill(pid, SIGUSR1);
+		usleep(500);
+		i--;
 	}
 }
 
-void	setup_signals(void)
+int	main(int ac, char **av)
 {
-	struct sigaction	sa;
+	int		i;
+	char	*message;
+	int		pid;
 
-	sa.sa_handler = signal_handler;
-	sigemptyset(&sa.sa_mask);
-	sa.sa_flags = SA_RESTART;
-	sigaction(SIGUSR1, &sa, NULL);
-	sigaction(SIGUSR2, &sa, NULL);
-}
-
-int	main(void)
-{
-	ft_printf("Pid Server : %d\n", getpid());
-	setup_signals();
-	while (1)
-		pause();
-	return (0);
+	if (ac != 3)
+		return (0);
+	if (!av[2])
+		return (0);
+	message = av[2];
+	pid = ft_atoi(av[1]);
+	i = 0;
+	if (pid < 0)
+		return (0);
+	while (message[i])
+	{
+		send_char(message[i], pid);
+		i++;
+	}
+	send_char('\0', pid);
 }
