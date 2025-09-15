@@ -6,7 +6,7 @@
 /*   By: badr <badr@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 00:00:00 by badr              #+#    #+#             */
-/*   Updated: 2025/09/12 19:37:27 by badr             ###   ########.fr       */
+/*   Updated: 2025/09/15 17:45:35 by badr             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,8 @@ void	signal_handler(int signal)
 	int	count;
 	int	current_char;
 
-	count = (g_data >> 8) & 0xFF;
-	current_char = g_data & 0xFF;
+	count = (g_data >> 8) & 255;
+	current_char = g_data & 255;
 	current_char *= 2;
 	if (signal == SIGUSR2)
 		current_char |= 1;
