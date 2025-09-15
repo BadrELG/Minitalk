@@ -6,27 +6,32 @@
 /*   By: badr <badr@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 00:00:00 by badr              #+#    #+#             */
-/*   Updated: 2025/09/11 00:00:00 by badr             ###   ########.fr       */
+/*   Updated: 2025/09/12 19:37:27 by badr             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 
-static char	g_char = 0;
-static int	g_bit_count = 0;
+static int	g_data = 0;
 
 void	signal_handler(int signal)
 {
-	g_char *= 2;
+	int	count;
+	int	current_char;
+
+	count = (g_data >> 8) & 0xFF;
+	current_char = g_data & 0xFF;
+	current_char *= 2;
 	if (signal == SIGUSR2)
-		g_char = g_char | 1;
-	g_bit_count++;
-	if (g_bit_count == 8)
+		current_char |= 1;
+	count++;
+	if (count == 8)
 	{
-		ft_printf("%c", g_char);
-		g_char = 0;
-		g_bit_count = 0;
+		ft_printf("%c", current_char);
+		g_data = 0;
 	}
+	else
+		g_data = (count << 8) | current_char;
 }
 
 void	setup_signals(void)

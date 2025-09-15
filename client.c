@@ -6,7 +6,7 @@
 /*   By: badr <badr@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 00:00:00 by badr              #+#    #+#             */
-/*   Updated: 2025/09/11 04:15:14 by badr             ###   ########.fr       */
+/*   Updated: 2025/09/12 19:48:25 by badr             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void	send_char(char c, int pid)
 			kill(pid, SIGUSR2);
 		else
 			kill(pid, SIGUSR1);
-		usleep(500);
+		usleep(50);
 		i--;
 	}
 }
@@ -50,6 +50,6 @@ int	main(int ac, char **av)
 		send_char(message[i], pid);
 		i++;
 	}
-    send_char('\n', pid);
+	send_char('\n', pid);
 	send_char('\0', pid);
 }
