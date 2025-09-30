@@ -6,49 +6,52 @@
 /*   By: badr <badr@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 00:00:00 by badr              #+#    #+#             */
-/*   Updated: 2025/09/15 17:45:35 by badr             ###   ########.fr       */
+/*   Updated: 2025/09/30 19:26:16 by badr             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 
-static int	g_data = 0;
+static t_server	g_server;
 
-void	signal_handler(int signal)
+void	handle_signal(int signal)
 {
-	int	count;
-	int	current_char;
+	t_server	*s;
 
-	count = (g_data >> 8) & 255;
-	current_char = g_data & 255;
-	current_char *= 2;
-	if (signal == SIGUSR2)
-		current_char |= 1;
-	count++;
-	if (count == 8)
+	if (signal == SIGUSR1)
+		g_server.current_char = g_server.current_char << 1;
+	else if (signal == SIGUSR2)
+		g_server.current_char = (g_server.current_char << 1) | 1;
+	g_server.bits_received++;
+	if (g_server.bits_received == 8)
 	{
-		ft_printf("%c", current_char);
-		g_data = 0;
+		if (g_server.current_char == '\0')
+		{
+			write(1, g_server.message_buffer, g_server.buffer_index);
+			write(1, "\n", 1);
+			g_server.buffer_index = 0;
+		}
+		else
+		{
+			s = &g_server;
+			if (s->buffer_index < BUFFER_SIZE - 1)
+				s->message_buffer[s->buffer_index++] = s->current_char;
+		}
+		g_server.current_char = 0;
+		g_server.bits_received = 0;
 	}
-	else
-		g_data = (count << 8) | current_char;
-}
-
-void	setup_signals(void)
-{
-	struct sigaction	sa;
-
-	sa.sa_handler = signal_handler;
-	sigemptyset(&sa.sa_mask);
-	sa.sa_flags = SA_RESTART;
-	sigaction(SIGUSR1, &sa, NULL);
-	sigaction(SIGUSR2, &sa, NULL);
 }
 
 int	main(void)
 {
-	ft_printf("Pid Server : %d\n", getpid());
-	setup_signals();
+	struct sigaction	sa;
+
+	ft_printf("Server PID: %d\n", getpid());
+	sa.sa_handler = handle_signal;
+	sa.sa_flags = SA_RESTART;
+	sigemptyset(&sa.sa_mask);
+	sigaction(SIGUSR1, &sa, NULL);
+	sigaction(SIGUSR2, &sa, NULL);
 	while (1)
 		pause();
 	return (0);
