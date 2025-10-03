@@ -6,7 +6,7 @@
 /*   By: badr <badr@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 00:00:00 by badr              #+#    #+#             */
-/*   Updated: 2025/09/12 19:48:25 by badr             ###   ########.fr       */
+/*   Updated: 2025/10/03 12:29:37 by badr             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,8 +43,8 @@ int	main(int ac, char **av)
 	message = av[2];
 	pid = ft_atoi(av[1]);
 	i = 0;
-	if (pid < 0)
-		return (0);
+	if (pid <= 0)
+		return (ft_printf("Erreur Pid\n"), 1);
 	while (message[i])
 	{
 		send_char(message[i], pid);
@@ -52,4 +52,5 @@ int	main(int ac, char **av)
 	}
 	send_char('\n', pid);
 	send_char('\0', pid);
+	return (0);
 }
